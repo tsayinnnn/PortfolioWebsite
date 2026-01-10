@@ -1,1 +1,1 @@
-charlene's profesional portfolio
+charlene's professional portfolio
