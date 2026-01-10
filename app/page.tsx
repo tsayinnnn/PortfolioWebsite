@@ -26,32 +26,32 @@ const SKILLS_DATA = [
 ];
 
 const EXPERIENCE_DATA = [
-  { role: "Principal AI Engineer", company: "Standard Chartered", year: "2025", active: true },
-  { role: "AI Ops Engineer", company: "Centre of Excellence for GenAI, Cambridge", year: "2025" },
-  { role: "Senior Full-Stack Developer", company: "Core Technology, Cambridge", year: "2024" },
-  { role: "Software Engineering Lead", company: "PocketDevs", year: "2022" },
-  { role: "Lead Application Developer", company: "Bluewind Asia", year: "2021" },
-  { role: "Software Engineer", company: "GCM", year: "2020" },
+  { role: "UI/UX Designer and  Front-End Developer", company: "iWave inc., Makati, Philippines", year: "2025", active: true },
+  { role: "Front-End Developer", company: "Empatho Pte Ltd., Singapore", year: "2025" },
+  { role: "Software Developer Intern", company: "iWave inc., Makati, Philippines", year: "2024" },
+  { role: "Tech Executive Officer", company: "Linetype Technologies Pte Ltd., Singapore", year: "2024" },
+  { role: "Graphic Designer and Social Media Manager,", company: "Office of a Public Figure", year: "2024" },
+  { role: "FrontEnd Developer and Chief Design Officer", company: "Start Up: Cygntek One Loyal", year: "2023" },
 ];
 
 const CERTIFICATIONS_DATA = [
-  { title: "Huawei Developer Expert", issuer: "Huawei" },
-  { title: "Generative AI Leader", issuer: "Google" },
-  { title: "Software Engineering", issuer: "TestDome" },
-  { title: "Generative AI Professional", issuer: "Oracle" },
+  { title: "Google IT Support Professional Certificate", issuer: "Google, 2025" },
+  { title: "Networking Basics", issuer: "Cisco, 2025" },
+  { title: "Technical Support Fundamentals", issuer: "Google, 2024" },
+  { title: "Overview of AI", issuer: "Huawei, 2024" },
   
 ];
 
 const AWARDS_DATA = [
-  { title: "Huawei Developer Expert", issuer: "Huawei" },
-  { title: "Generative AI Leader", issuer: "Google" },
-  { title: "Software Engineering", issuer: "TestDome" },
-  { title: "Generative AI Professional", issuer: "Oracle" },
+  { title: "Civil Service Commission, National Career Service ExaminationPasser", issuer: "Professional Level, March 2024" },
+  { title: "R.A. 7687 Undergraduate S&T Scholarship Recipient", issuer: "Department of Science and Technology" },
+  { title: "President’s Lister", issuer: "Bulacan State University 2024-2025" },
+  { title: "Dean’s Lister", issuer: "Bulacan State University 2023-2025" },
 ];
 
 export default function Home() {
   const [isDark, setIsDark] = useState(true);
-  const portfolioRef = useRef(null);
+  const portfolioRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -107,7 +107,7 @@ export default function Home() {
         </h1>
 
         <p className="text-lg md:text-xl text-zinc-500 dark:text-zinc-400 max-w-2xl mb-12 leading-relaxed">
-          Computer Engineering Graduate with years of experience in software
+          Computer Engineering Student with years of experience in software
           development, UI/UX Designing and Graphic Design,
         </p>
 
@@ -115,7 +115,10 @@ export default function Home() {
           <button className="bg-[var(--color-brand-pink)] text-black font-bold px-10 py-4 rounded-xl hover:opacity-90 transition-all hover:scale-105 active:scale-95">
             Email
           </button>
-          <button className="bg-white/5 dark:bg-white/5 backdrop-blur-md text-current font-semibold px-10 py-4 rounded-xl border border-white/10 hover:bg-white/10 transition-all">
+          <button 
+            onClick={() => portfolioRef.current?.scrollIntoView({ behavior: "smooth" })}
+            className="bg-white/5 dark:bg-white/5 backdrop-blur-md text-current font-semibold px-10 py-4 rounded-xl border border-white/10 hover:bg-white/10 transition-all"
+          >
             See Portfolio
           </button>
         </div>
@@ -150,23 +153,23 @@ export default function Home() {
               
               {/* About Card */}
               <div className="portfolio-card">
-                <div className="flex items-center gap-2 mb-6 text-white font-bold uppercase tracking-wider text-sm">
+                <div className="flex items-center gap-2 mb-6 font-bold uppercase tracking-wider text-sm">
                   <Layout size={18} /> <span>About</span>
                 </div>
                 <p className="text-zinc-400 leading-relaxed">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat...
+                  Passionate Computer Engineering student seeking employment opportunities in computer engineering-related positions and internships. With a solid foundation in front-end development, full-stack development, and graphic design, I aim to leverage my knowledge and skills to achieve my professional goals. Committed to continuous improvement in the field, I seek to gain practical experience by collaborating with seasoned engineers, allowing my full potential to manifest and contribute effectively.
                 </p>
               </div>
 
               {/* Skills Card */}
               <div className="portfolio-card">
-                <div className="flex items-center gap-2 mb-8 text-white font-bold uppercase tracking-wider text-sm">
+                <div className="flex items-center gap-2 mb-8 font-bold uppercase tracking-wider text-sm">
                   <Settings size={18} /> <span>Skills</span>
                 </div>
                 <div className="space-y-8">
                   {SKILLS_DATA.map((group, idx) => (
                     <div key={idx}>
-                      <h4 className="text-white font-bold mb-4">{group.category}</h4>
+                      <h4 className=" font-bold mb-4">{group.category}</h4>
                       <div className="flex flex-wrap gap-3">
                         {group.items.map((skill, i) => (
                           <span key={i} className="skill-tag">{skill}</span>
@@ -181,7 +184,7 @@ export default function Home() {
             {/* Right Side (Experience) - Spans both rows */}
             <div className="lg:col-span-5">
               <div className="portfolio-card">
-                <div className="flex items-center gap-2 mb-10 text-white font-bold uppercase tracking-wider text-sm">
+                <div className="flex items-center gap-2 mb-10  font-bold uppercase tracking-wider text-sm">
                   <Briefcase size={18} /> <span>Experience</span>
                 </div>
                 
@@ -194,7 +197,7 @@ export default function Home() {
                       
                       <div className="flex justify-between items-start gap-4">
                         <div>
-                          <h4 className="text-lg font-bold text-white mb-1">{item.role}</h4>
+                          <h4 className="text-lg font-bold  mb-1">{item.role}</h4>
                           <p className="text-sm text-zinc-500">{item.company}</p>
                         </div>
                         <span className="px-3 py-1 rounded-full border border-[#2E2E2E] text-xs font-bold text-zinc-300">
@@ -210,13 +213,13 @@ export default function Home() {
             {/* Bottom Row (Certifications + Awards) */}
             <div className="lg:col-span-6">
               <div className="portfolio-card">
-                <div className="flex items-center gap-2 mb-8 text-white font-bold uppercase tracking-wider text-sm">
+                <div className="flex items-center gap-2 mb-8 font-bold uppercase tracking-wider text-sm">
                   <GraduationCap size={18} /> <span>Certifications</span>
                 </div>
                 <div className="grid gap-4">
                   {CERTIFICATIONS_DATA.map((cert, i) => (
                     <div key={i} className="cert-item">
-                      <h5 className="font-bold text-white">{cert.title}</h5>
+                      <h5 className="font-bold">{cert.title}</h5>
                       <p className="text-xs text-zinc-500">{cert.issuer}</p>
                     </div>
                   ))}
@@ -226,13 +229,13 @@ export default function Home() {
 
             <div className="lg:col-span-6">
               <div className="portfolio-card">
-                <div className="flex items-center gap-2 mb-8 text-white font-bold uppercase tracking-wider text-sm">
+                <div className="flex items-center gap-2 mb-8 font-bold uppercase tracking-wider text-sm">
                   <Award size={18} /> <span>Awards and Seminars</span>
                 </div>
                 <div className="grid gap-4">
                   {AWARDS_DATA.map((award, i) => (
                     <div key={i} className="cert-item">
-                      <h5 className="font-bold text-white">{award.title}</h5>
+                      <h5 className="font-bold ">{award.title}</h5>
                       <p className="text-xs text-zinc-500">{award.issuer}</p>
                     </div>
                   ))}
