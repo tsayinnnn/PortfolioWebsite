@@ -50,7 +50,7 @@ export default function Home() {
   // --- ANIME.JS HERO ENTRANCE ---
   useEffect(() => {
     animate('.animate-hero',{
-      translateY: [30, 0],
+      translateY: [50, 0],
       opacity: [0, 1],
       delay: stagger(150),
       easing: 'easeOutExpo',
@@ -65,9 +65,9 @@ export default function Home() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             animate('.portfolio-card-animate',{
-              translateY: [40, 0],
+              translateY: [50, 0],
               opacity: [0, 1],
-              delay: stagger(100),
+              delay: stagger(150),
               easing: 'easeOutExpo',
               duration: 1000,
             });
@@ -142,9 +142,9 @@ export default function Home() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 animate-hero opacity-0">
-            <button className="bg-brand-pink text-black font-bold px-10 py-4 rounded-xl hover:opacity-90 transition-all hover:scale-105 active:scale-95">
+            <a href="mailto:charlenejuanfernandez@gmail.com" target="_blank"><button className="bg-brand-pink text-black font-bold px-10 py-4 rounded-xl hover:opacity-90 transition-all hover:scale-105 active:scale-95">
               <div className="flex items-center gap-2"><Mail size={18}/> Email</div>
-            </button>
+            </button> </a>
             <button 
               onClick={scrollToPortfolio}
               className="bg-white/5 backdrop-blur-md text-current font-semibold px-10 py-4 rounded-xl border border-white/10 hover:bg-white/10 transition-all"
@@ -170,9 +170,9 @@ export default function Home() {
                 <MapPin size={18} /> <span>Bulacan, Philippines</span>
               </div>
               <div className="flex gap-3 justify-center md:justify-start">
-                <button className="p-3 rounded-xl bg-brand-pink text-black"><Mail size={20}/></button>
-                <button className="p-3 rounded-xl bg-[#2E2E2E] text-white"><Linkedin size={20}/></button>
-                <button className="p-3 rounded-xl bg-brand-pink/10 border border-brand-pink/20 text-brand-pink"><Github size={20}/></button>
+                <a href="mailto:charlenejuanfernandez@gmail.com" target="_blank"><button className="p-3 rounded-xl bg-brand-pink text-black"><Mail size={20}/></button></a>
+                <a href="https://www.linkedin.com/in/charlenefernandez327/" target="_blank"><button className="p-3 rounded-xl bg-[#2E2E2E] text-white"><Linkedin size={20}/></button></a>
+                <a href="https://github.com/tsayinnnn" target="_blank"><button className="p-3 rounded-xl bg-brand-pink/10 border border-brand-pink/20 text-brand-pink"><Github size={20}/></button></a>
               </div>
             </div>
           </div>
@@ -187,7 +187,7 @@ export default function Home() {
                   <Layout size={14} /> <span>About</span>
                 </div>
                 <p className="text-zinc-400 leading-relaxed text-sm md:text-base">
-                  Passionate Computer Engineering student seeking employment opportunities in computer engineering-related positions and internships... [Truncated for brevity]
+                 Passionate Computer Engineering student seeking employment opportunities in computer engineering-related positions and internships. With a solid foundation in front-end development, full-stack development, and graphic design, I aim to leverage my knowledge and skills to achieve my professional goals. Committed to continuous improvement in the field, I seek to gain practical experience by collaborating with seasoned engineers, allowing my full potential to manifest and contribute effectively.
                 </p>
               </div>
 
