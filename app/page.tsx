@@ -2,22 +2,17 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+// Using the standard import with a fix for Turbopack inside the component
+import { animate } from 'animejs';
 import { 
   Sun, Moon, Mail, ChevronRight, MapPin, 
   Linkedin, Github, Layout, Settings, Briefcase, 
-  Award, BookOpen, GraduationCap 
+  Award, GraduationCap 
 } from "lucide-react";
+import { stagger } from "animejs";
 
 
-// Simple SVG Icons
-const SunIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M22 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-);
-
-const MoonIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-);
-// --- DYNAMIC DATA OBJECTS (Add more here in the future) ---
+// --- DYNAMIC DATA OBJECTS (Edit these to add more in the future) ---
 const SKILLS_DATA = [
   { category: "Frontend", items: ["JavaScript", "Tailwind CSS", "React", "Next.js"] },
   { category: "Backend", items: ["Node.js", "Express", "PostgreSQL"] },
@@ -26,11 +21,11 @@ const SKILLS_DATA = [
 ];
 
 const EXPERIENCE_DATA = [
-  { role: "UI/UX Designer and  Front-End Developer", company: "iWave inc., Makati, Philippines", year: "2025", active: true },
+  { role: "UI/UX Designer and Front-End Developer", company: "iWave inc., Makati, Philippines", year: "2025", active: true },
   { role: "Front-End Developer", company: "Empatho Pte Ltd., Singapore", year: "2025" },
   { role: "Software Developer Intern", company: "iWave inc., Makati, Philippines", year: "2024" },
   { role: "Tech Executive Officer", company: "Linetype Technologies Pte Ltd., Singapore", year: "2024" },
-  { role: "Graphic Designer and Social Media Manager,", company: "Office of a Public Figure", year: "2024" },
+  { role: "Graphic Designer and Social Media Manager", company: "Office of a Public Figure", year: "2024" },
   { role: "FrontEnd Developer and Chief Design Officer", company: "Start Up: Cygntek One Loyal", year: "2023" },
 ];
 
@@ -39,12 +34,11 @@ const CERTIFICATIONS_DATA = [
   { title: "Networking Basics", issuer: "Cisco, 2025" },
   { title: "Technical Support Fundamentals", issuer: "Google, 2024" },
   { title: "Overview of AI", issuer: "Huawei, 2024" },
-  
 ];
 
 const AWARDS_DATA = [
-  { title: "Civil Service Commission, National Career Service ExaminationPasser", issuer: "Professional Level, March 2024" },
-  { title: "R.A. 7687 Undergraduate S&T Scholarship Recipient", issuer: "Department of Science and Technology" },
+  { title: "Civil Service Commission, Professional Passer", issuer: "March 2024" },
+  { title: "R.A. 7687 Undergraduate S&T Scholarship", issuer: "DOST" },
   { title: "President’s Lister", issuer: "Bulacan State University 2024-2025" },
   { title: "Dean’s Lister", issuer: "Bulacan State University 2023-2025" },
 ];
@@ -53,30 +47,61 @@ export default function Home() {
   const [isDark, setIsDark] = useState(true);
   const portfolioRef = useRef<HTMLElement>(null);
 
+  // --- ANIME.JS HERO ENTRANCE ---
+  useEffect(() => {
+    animate('.animate-hero',{
+      translateY: [30, 0],
+      opacity: [0, 1],
+      delay: stagger(150),
+      easing: 'easeOutExpo',
+      duration: 1200,
+    });
+  }, []);
+
+  // --- ANIME.JS SCROLL TRIGGER ---
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            animate('.portfolio-card-animate',{
+              translateY: [40, 0],
+              opacity: [0, 1],
+              delay: stagger(100),
+              easing: 'easeOutExpo',
+              duration: 1000,
+            });
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    if (portfolioRef.current) observer.observe(portfolioRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  // Theme Toggle Logic
   useEffect(() => {
     const root = window.document.documentElement;
-    if (isDark) {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
+    isDark ? root.classList.add("dark") : root.classList.remove("dark");
   }, [isDark]);
 
-  return (
-    <div className="min-h-screen relative overflow-hidden">
-      
-   
-      {/* 1. THE MOVING GRID (Lowest Layer) */}
-      <div className="grid-container">
-        <div className="grid-lines"></div>
-      </div>
+  const scrollToPortfolio = () => {
+    portfolioRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
-      {/* 2. THE WHITE SHADOW GLOW (Middle Layer) */}
+  return (
+    <div className="min-h-screen relative overflow-x-hidden selection:bg-brand-pink/30">
+      
+      {/* 1. BACKGROUND LAYERS */}
+      <div className="grid-container"><div className="grid-lines"></div></div>
       <div className="bg-glow-container" aria-hidden="true"></div>
 
-      {/* 3. THE CONTENT (Top Layer) */}
+      {/* 2. NAVIGATION */}
       <nav className="flex items-center justify-between max-w-7xl mx-auto px-8 py-6 relative z-50">
-        <div className="relative w-15 h-15">
+        <div className="relative w-12 h-12 animate-hero opacity-0">
           <Image
             src={isDark ? "/logo.svg" : "/logo-dark.svg"}
             alt="cha logo"
@@ -87,92 +112,96 @@ export default function Home() {
 
         <button
           onClick={() => setIsDark(!isDark)}
-          className="p-2 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
+          className="p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all animate-hero opacity-0"
         >
-          {isDark ? <SunIcon /> : <MoonIcon />}
+          {isDark ? <Sun size={20} /> : <Moon size={20} />}
         </button>
       </nav>
- <section className="relative h-80vh flex flex-col items-center justify-center">
-      <main className="relative flex flex-col items-center justify-center pt-24 pb-32 px-6 text-center z-10">
-        <a href="https://www.linkedin.com/in/charlenefernandez327/"><div className="name-badge">
-          <span className="font-bold">Charlene Fernandez :</span>
-          <span className="text-zinc-500">Software Dev - UI/UX Designer</span>
-          <span className="ml-1 text-zinc-400">&gt;</span>
-        </div> </a>
 
-        <h1 className="text-5xl md:text-8xl font-bold tracking-tight leading-[1.1] max-w-5xl mb-8">
-          To develop the world <br />
-          <span className="text-zinc-400 dark:text-zinc-500">a little more </span>
-          <span className="text-[var(--color-brand-pink)]">colorful than the other.</span>
-        </h1>
-
-        <p className="text-lg md:text-xl text-zinc-500 dark:text-zinc-400 max-w-2xl mb-12 leading-relaxed">
-          Computer Engineering Student with years of experience in software
-          development, UI/UX Designing and Graphic Design,
-        </p>
-
-        <div className="flex flex-col sm:flex-row gap-4">
-          <button className="bg-[var(--color-brand-pink)] text-black font-bold px-10 py-4 rounded-xl hover:opacity-90 transition-all hover:scale-105 active:scale-95">
-            Email
-          </button>
-          <button 
-            onClick={() => portfolioRef.current?.scrollIntoView({ behavior: "smooth" })}
-            className="bg-white/5 dark:bg-white/5 backdrop-blur-md text-current font-semibold px-10 py-4 rounded-xl border border-white/10 hover:bg-white/10 transition-all"
-          >
-            See Portfolio
-          </button>
-        </div>
-      </main>
-    </section>
- {/* SECTION 2: PORTFOLIO DETAIL */}
-      <section ref={portfolioRef} className="angular-gradient-bg py-24 px-6">
-        <div className="max-w-7xl mx-auto">
+      {/* 3. HERO SECTION */}
+      <section className="relative min-h-[85vh] flex flex-col items-center justify-center">
+        <main className="relative flex flex-col items-center justify-center pt-10 pb-32 px-6 text-center z-10">
           
-          {/* 1. Header Area */}
-          <div className="flex flex-col md:flex-row items-center gap-10 mb-16">
+          <a href="https://www.linkedin.com/in/charlenefernandez327/" target="_blank" className="animate-hero opacity-0">
+            <div className="name-badge hover:border-brand-pink transition-colors cursor-pointer">
+              <span className="font-bold">Charlene Fernandez :</span>
+              <span className="text-zinc-500">Software Dev - UI/UX Designer</span>
+              <ChevronRight size={14} className="ml-1 text-zinc-400" />
+            </div>
+          </a>
+
+          <h1 className="text-5xl md:text-8xl font-bold tracking-tight leading-[1.1] max-w-5xl mb-8 animate-hero opacity-0">
+            To develop the world <br />
+            <span className="text-zinc-400 dark:text-zinc-600">a little more </span>
+            <span className="text-brand-pink">colorful than the other.</span>
+          </h1>
+
+          <p className="text-lg md:text-xl text-zinc-500 dark:text-zinc-400 max-w-2xl mb-12 leading-relaxed animate-hero opacity-0">
+            Computer Engineering Student with years of experience in software
+            development, UI/UX Designing and Graphic Design.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 animate-hero opacity-0">
+            <button className="bg-brand-pink text-black font-bold px-10 py-4 rounded-xl hover:opacity-90 transition-all hover:scale-105 active:scale-95">
+              <div className="flex items-center gap-2"><Mail size={18}/> Email</div>
+            </button>
+            <button 
+              onClick={scrollToPortfolio}
+              className="bg-white/5 backdrop-blur-md text-current font-semibold px-10 py-4 rounded-xl border border-white/10 hover:bg-white/10 transition-all"
+            >
+              See Portfolio
+            </button>
+          </div>
+        </main>
+      </section>
+
+      {/* 4. PORTFOLIO DETAIL SECTION */}
+      <section ref={portfolioRef} className="section-ambient-bg py-24 px-6 border-t border-white/5">
+        <div className="section-grid-overlay"></div>
+        
+        <div className="max-w-7xl mx-auto relative z-10">
+          
+          {/* Portfolio Header */}
+          <div className="flex flex-col md:flex-row items-center gap-10 mb-20 portfolio-card-animate opacity-0">
             <div className="w-52 h-52 bg-white rounded-2xl shrink-0 shadow-2xl"></div>
             <div className="text-center md:text-left">
-              <h2 className="text-6xl font-bold mb-4">Charlene Fernandez</h2>
-              <div className="flex items-center justify-center md:justify-start gap-2 text-zinc-400 mb-2">
+              <h2 className="text-5xl md:text-6xl font-bold mb-4 tracking-tight">Charlene Fernandez</h2>
+              <div className="flex items-center justify-center md:justify-start gap-2 text-zinc-500 mb-6">
                 <MapPin size={18} /> <span>Bulacan, Philippines</span>
               </div>
-              <p className="text-zinc-400 text-lg mb-6">Software Developer / UI/UX Designer</p>
               <div className="flex gap-3 justify-center md:justify-start">
                 <button className="p-3 rounded-xl bg-brand-pink text-black"><Mail size={20}/></button>
                 <button className="p-3 rounded-xl bg-[#2E2E2E] text-white"><Linkedin size={20}/></button>
-                <button className="p-3 rounded-xl bg-brand-pink/20 border border-brand-pink/30 text-brand-pink"><Github size={20}/></button>
+                <button className="p-3 rounded-xl bg-brand-pink/10 border border-brand-pink/20 text-brand-pink"><Github size={20}/></button>
               </div>
             </div>
           </div>
 
-          {/* 2. Grid Content */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Grouped Content Cards */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
-            {/* Left Side (About + Skills) */}
+            {/* Left: About + Skills */}
             <div className="lg:col-span-7 flex flex-col gap-6">
-              
-              {/* About Card */}
-              <div className="portfolio-card">
-                <div className="flex items-center gap-2 mb-6 font-bold uppercase tracking-wider text-sm">
-                  <Layout size={18} /> <span>About</span>
+              <div className="portfolio-card portfolio-card-animate opacity-0">
+                <div className="flex items-center gap-2 mb-6 font-bold uppercase tracking-widest text-[10px] text-zinc-500">
+                  <Layout size={14} /> <span>About</span>
                 </div>
-                <p className="text-zinc-400 leading-relaxed">
-                  Passionate Computer Engineering student seeking employment opportunities in computer engineering-related positions and internships. With a solid foundation in front-end development, full-stack development, and graphic design, I aim to leverage my knowledge and skills to achieve my professional goals. Committed to continuous improvement in the field, I seek to gain practical experience by collaborating with seasoned engineers, allowing my full potential to manifest and contribute effectively.
+                <p className="text-zinc-400 leading-relaxed text-sm md:text-base">
+                  Passionate Computer Engineering student seeking employment opportunities in computer engineering-related positions and internships... [Truncated for brevity]
                 </p>
               </div>
 
-              {/* Skills Card */}
-              <div className="portfolio-card">
-                <div className="flex items-center gap-2 mb-8 font-bold uppercase tracking-wider text-sm">
-                  <Settings size={18} /> <span>Skills</span>
+              <div className="portfolio-card portfolio-card-animate opacity-0">
+                <div className="flex items-center gap-2 mb-8 font-bold uppercase tracking-widest text-[10px] text-zinc-500">
+                  <Settings size={14} /> <span>Skills</span>
                 </div>
                 <div className="space-y-8">
                   {SKILLS_DATA.map((group, idx) => (
                     <div key={idx}>
-                      <h4 className=" font-bold mb-4">{group.category}</h4>
-                      <div className="flex flex-wrap gap-3">
+                      <h4 className="text-white text-sm font-bold mb-4">{group.category}</h4>
+                      <div className="flex flex-wrap gap-2">
                         {group.items.map((skill, i) => (
-                          <span key={i} className="skill-tag">{skill}</span>
+                          <span key={i} className="skill-tag text-xs">{skill}</span>
                         ))}
                       </div>
                     </div>
@@ -181,28 +210,23 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right Side (Experience) - Spans both rows */}
+            {/* Right: Experience Timeline */}
             <div className="lg:col-span-5">
-              <div className="portfolio-card">
-                <div className="flex items-center gap-2 mb-10  font-bold uppercase tracking-wider text-sm">
-                  <Briefcase size={18} /> <span>Experience</span>
+              <div className="portfolio-card portfolio-card-animate opacity-0 h-full">
+                <div className="flex items-center gap-2 mb-10 font-bold uppercase tracking-widest text-[10px] text-zinc-500">
+                  <Briefcase size={14} /> <span>Experience</span>
                 </div>
-                
                 <div className="relative ml-2 space-y-12">
                   <div className="timeline-line"></div>
                   {EXPERIENCE_DATA.map((item, idx) => (
                     <div key={idx} className="relative pl-10">
-                      {/* Timeline Dot */}
-                      <div className={`absolute left-0 top-1 w-4 h-4 rounded-full border-2 border-[#2E2E2E] z-10 ${item.active ? 'bg-white' : 'bg-[#111111]'}`}></div>
-                      
+                      <div className={`absolute left-0 top-1.5 w-3.5 h-3.5 rounded-full border-2 border-[#2E2E2E] z-10 ${item.active ? 'bg-brand-pink border-brand-pink' : 'bg-[#111111]'}`}></div>
                       <div className="flex justify-between items-start gap-4">
                         <div>
-                          <h4 className="text-lg font-bold  mb-1">{item.role}</h4>
-                          <p className="text-sm text-zinc-500">{item.company}</p>
+                          <h4 className="text-sm font-bold text-white mb-1">{item.role}</h4>
+                          <p className="text-[10px] text-zinc-500">{item.company}</p>
                         </div>
-                        <span className="px-3 py-1 rounded-full border border-[#2E2E2E] text-xs font-bold text-zinc-300">
-                          {item.year}
-                        </span>
+                        <span className="px-2 py-0.5 rounded-full border border-[#2E2E2E] text-[10px] font-bold text-zinc-400">{item.year}</span>
                       </div>
                     </div>
                   ))}
@@ -210,17 +234,17 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Bottom Row (Certifications + Awards) */}
+            {/* Bottom Row: Certs + Awards */}
             <div className="lg:col-span-6">
-              <div className="portfolio-card">
-                <div className="flex items-center gap-2 mb-8 font-bold uppercase tracking-wider text-sm">
-                  <GraduationCap size={18} /> <span>Certifications</span>
+              <div className="portfolio-card portfolio-card-animate opacity-0">
+                <div className="flex items-center gap-2 mb-8 font-bold uppercase tracking-widest text-[10px] text-zinc-500">
+                  <GraduationCap size={14} /> <span>Certifications</span>
                 </div>
-                <div className="grid gap-4">
+                <div className="grid gap-3">
                   {CERTIFICATIONS_DATA.map((cert, i) => (
                     <div key={i} className="cert-item">
-                      <h5 className="font-bold">{cert.title}</h5>
-                      <p className="text-xs text-zinc-500">{cert.issuer}</p>
+                      <h5 className="text-sm font-bold text-white">{cert.title}</h5>
+                      <p className="text-[10px] text-zinc-500">{cert.issuer}</p>
                     </div>
                   ))}
                 </div>
@@ -228,15 +252,15 @@ export default function Home() {
             </div>
 
             <div className="lg:col-span-6">
-              <div className="portfolio-card">
-                <div className="flex items-center gap-2 mb-8 font-bold uppercase tracking-wider text-sm">
-                  <Award size={18} /> <span>Awards and Seminars</span>
+              <div className="portfolio-card portfolio-card-animate opacity-0">
+                <div className="flex items-center gap-2 mb-8 font-bold uppercase tracking-widest text-[10px] text-zinc-500">
+                  <Award size={14} /> <span>Awards and Seminars</span>
                 </div>
-                <div className="grid gap-4">
+                <div className="grid gap-3">
                   {AWARDS_DATA.map((award, i) => (
                     <div key={i} className="cert-item">
-                      <h5 className="font-bold ">{award.title}</h5>
-                      <p className="text-xs text-zinc-500">{award.issuer}</p>
+                      <h5 className="text-sm font-bold text-white">{award.title}</h5>
+                      <p className="text-[10px] text-zinc-500">{award.issuer}</p>
                     </div>
                   ))}
                 </div>
