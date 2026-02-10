@@ -69,10 +69,12 @@ body {
   border-radius: 0.75rem;
   border: 1px solid var(--border-color);
   transition: all 0.2s;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 .btn-portfolio:hover {
-  filter: brightness(1.2);
+  background-color: var(--border-color);
+  transform: translateY(-1px);
 }
 
 /* ... keep your existing CSS ... */
@@ -109,7 +111,7 @@ body {
 
 .section-ambient-bg {
   position: relative;
-  background-color: #000000;
+  background-color: var(--bg-color);
   overflow: hidden;
 }
 
@@ -131,22 +133,31 @@ body {
   pointer-events: none;
 }
 
+.dark .section-ambient-bg {
+  background-color: #000000;
+}
+
 /* Subtle grid continuation for Section 2 */
 .section-grid-overlay {
   position: absolute;
   inset: 0;
   background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
   background-size: 50px 50px;
   mask-image: linear-gradient(to bottom, white, transparent);
   -webkit-mask-image: linear-gradient(to bottom, white, transparent);
   pointer-events: none;
 }
 
+.dark .section-grid-overlay {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
 .portfolio-card {
-  
-    border: 1px solid var(--border-color);
+  border: 1px solid var(--border-color);
   background-color: var(--card-bg);
   backdrop-filter: blur(12px);
   border-radius: 1.5rem;
@@ -160,11 +171,32 @@ body {
 }
 
 .skill-tag {
-  @apply px-4 py-1.5 rounded-lg border border-[#2E2E2E] bg-[#111111] text-sm text-white hover:border-brand-pink/50 transition-colors;
+  @apply px-4 py-1.5 rounded-lg border transition-colors;
+  border-color: var(--border-color);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.skill-tag:hover {
+  border-color: var(--color-brand-pink);
 }
 
 .cert-item {
-  @apply p-4 rounded-xl bg-black/30 border border-[#2E2E2E] hover:bg-black/50 transition-all cursor-default;
+  @apply p-4 rounded-xl transition-all cursor-default;
+  background-color: rgba(0, 0, 0, 0.03);
+  border: 1px solid var(--border-color);
+}
+
+.dark .cert-item {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.cert-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.dark .cert-item:hover {
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 /* Vertical Timeline Line */
@@ -174,5 +206,5 @@ body {
   top: 10px;
   bottom: 0;
   width: 1px;
-  background-color: #2E2E2E;
+  background-color: var(--border-color);
 }

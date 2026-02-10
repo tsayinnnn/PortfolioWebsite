@@ -145,12 +145,13 @@ export default function Home() {
             <a href="mailto:charlenejuanfernandez@gmail.com" target="_blank"><button className="bg-brand-pink text-black font-bold px-10 py-4 rounded-xl hover:opacity-90 transition-all hover:scale-105 active:scale-95">
               <div className="flex items-center gap-2"><Mail size={18}/> Email</div>
             </button> </a>
-            <button 
-              onClick={scrollToPortfolio}
-              className="bg-white/5 backdrop-blur-md text-current font-semibold px-10 py-4 rounded-xl border border-white/10 hover:bg-white/10 transition-all"
-            >
-              See Portfolio
-            </button>
+            <a href="https://www.canva.com/design/DAGpsOQaUuw/yrOSnsScmCKZj4Z-fovUEA/edit?utm_content=DAGpsOQaUuw&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton ">
+              <button
+                className="btn-portfolio"
+              >
+                See Portfolio
+              </button>
+            </a>
           </div>
         </main>
       </section>
@@ -163,7 +164,8 @@ export default function Home() {
           
           {/* Portfolio Header */}
           <div className="flex flex-col md:flex-row items-center gap-10 mb-20 portfolio-card-animate opacity-0">
-            <div className="w-52 h-52 bg-white rounded-2xl shrink-0 shadow-2xl"></div>
+            {/*<div className="w-52 h-52 bg-white rounded-2xl shrink-0 shadow-2xl"></div>*/}
+            <Image src="me.jpg" alt="A picture of me." width={200} height={200} className="w-52 h-52 rounded-2xl object-cover" />
             <div className="text-center md:text-left">
               <h2 className="text-5xl md:text-6xl font-bold mb-4 tracking-tight">Charlene Fernandez</h2>
               <div className="flex items-center justify-center md:justify-start gap-2 text-zinc-500 mb-6">
@@ -198,7 +200,7 @@ export default function Home() {
                 <div className="space-y-8">
                   {SKILLS_DATA.map((group, idx) => (
                     <div key={idx}>
-                      <h4 className="text-white text-sm font-bold mb-4">{group.category}</h4>
+                      <h4 className="text-sm font-bold mb-4">{group.category}</h4>
                       <div className="flex flex-wrap gap-2">
                         {group.items.map((skill, i) => (
                           <span key={i} className="skill-tag text-xs">{skill}</span>
@@ -220,13 +222,13 @@ export default function Home() {
                   <div className="timeline-line"></div>
                   {EXPERIENCE_DATA.map((item, idx) => (
                     <div key={idx} className="relative pl-10">
-                      <div className={`absolute left-0 top-1.5 w-3.5 h-3.5 rounded-full border-2 border-[#2E2E2E] z-10 ${item.active ? 'bg-brand-pink border-brand-pink' : 'bg-[#111111]'}`}></div>
+                      <div className={`absolute left-0 top-1.5 w-3.5 h-3.5 rounded-full border-2 border-zinc-500 z-10 ${item.active ? 'bg-brand-pink border-brand-pink' : 'bg-transparent'}`}></div>
                       <div className="flex justify-between items-start gap-4">
                         <div>
-                          <h4 className="text-sm font-bold text-white mb-1">{item.role}</h4>
+                          <h4 className="text-sm font-bold mb-1">{item.role}</h4>
                           <p className="text-[10px] text-zinc-500">{item.company}</p>
                         </div>
-                        <span className="px-2 py-0.5 rounded-full border border-[#2E2E2E] text-[10px] font-bold text-zinc-400">{item.year}</span>
+                        <span className="px-2 py-0.5 rounded-full border border-zinc-500/30 text-[10px] font-bold text-zinc-400">{item.year}</span>
                       </div>
                     </div>
                   ))}
@@ -243,7 +245,7 @@ export default function Home() {
                 <div className="grid gap-3">
                   {CERTIFICATIONS_DATA.map((cert, i) => (
                     <div key={i} className="cert-item">
-                      <h5 className="text-sm font-bold text-white">{cert.title}</h5>
+                      <h5 className="text-sm font-bold">{cert.title}</h5>
                       <p className="text-[10px] text-zinc-500">{cert.issuer}</p>
                     </div>
                   ))}
@@ -259,7 +261,7 @@ export default function Home() {
                 <div className="grid gap-3">
                   {AWARDS_DATA.map((award, i) => (
                     <div key={i} className="cert-item">
-                      <h5 className="text-sm font-bold text-white">{award.title}</h5>
+                      <h5 className="text-sm font-bold">{award.title}</h5>
                       <p className="text-[10px] text-zinc-500">{award.issuer}</p>
                     </div>
                   ))}
