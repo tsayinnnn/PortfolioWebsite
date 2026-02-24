@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { animate, stagger } from 'animejs';
-import { motion } from "framer-motion"; 
 import { 
   Sun, Moon, Mail, ChevronRight, MapPin, 
   Linkedin, Github, Layout, Settings, Briefcase, 
@@ -97,7 +96,8 @@ export default function Home() {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            animate('.portfolio-card-animate',{
+            const cards = entry.target.querySelectorAll('.portfolio-card-animate');
+            animate(cards, {
               translateY: [50, 0],
               opacity: [0, 1],
               delay: stagger(100),
@@ -113,7 +113,7 @@ export default function Home() {
 
     if (portfolioRef.current) observer.observe(portfolioRef.current);
     if (projectsRef.current) observer.observe(projectsRef.current);
-    
+
     return () => observer.disconnect();
   }, []);
 
@@ -293,16 +293,15 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {PROJECTS_DATA.map((project) => (
-              <motion.a 
+              <a
                 key={project.id}
                 href={project.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                whileHover={{ y: -12 }}
-                className="group relative overflow-hidden rounded-3xl bg-zinc-900/50 border border-white/10 aspect-video portfolio-card-animate opacity-0 block"
+                className="group relative overflow-hidden rounded-3xl bg-zinc-900/50 border border-white/10 aspect-video portfolio-card-animate opacity-0 block hover:-translate-y-3 transition-transform duration-300"
               >
-                <Image 
-                  src={isDark ? project.darkImg : project.lightImg} 
+                <Image
+                  src={isDark ? project.darkImg : project.lightImg}
                   alt={project.title}
                   fill
                   className="object-cover opacity-60 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"
@@ -318,7 +317,7 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-              </motion.a>
+              </a>
             ))}
           
           </div>
