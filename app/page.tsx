@@ -46,11 +46,11 @@ const PROJECTS_DATA = [
   },
   { 
     id: 3, 
-    title: "AUTOMATED PAYROLL SYSTEM", 
-    category: "Enterprise Software", 
+    title: "Empatho Website", 
+    category: "Front-End Development", 
     lightImg: "/proj3-light.png", 
     darkImg: "/proj3-dark.png",
-    url: "https://github.com/tsayinnnn" 
+    url: "https://empatho.sg/" 
   },
   { 
     id: 4, 
