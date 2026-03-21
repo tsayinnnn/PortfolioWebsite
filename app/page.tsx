@@ -65,50 +65,42 @@ const PROJECTS_DATA = [
 
 const DESIGN_PORTFOLIO_URL = "https://www.canva.com/design/DAGpsOQaUuw/yrOSnsScmCKZj4Z-fovUEA/edit?utm_content=DAGpsOQaUuw&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton";
 
-const DESIGN_SHOWCASE_DATA = [
-  {
-    id: 1,
-    label: "Open portfolio frame 04",
-    image: "/charlene-showcase/4.png",
-    className: "design-marquee__card--left",
-  },
-  {
-    id: 2,
-    label: "Open portfolio frame 07",
-    image: "/charlene-showcase/7.png",
-    className: "design-marquee__card--upper-left",
-  },
-  {
-    id: 3,
-    label: "Open portfolio frame 10",
-    image: "/charlene-showcase/10.png",
-    className: "design-marquee__card--lower-left",
-  },
-  {
-    id: 4,
-    label: "Open portfolio frame 18",
-    image: "/charlene-showcase/18.png",
-    className: "design-marquee__card--center",
-  },
-  {
-    id: 5,
-    label: "Open portfolio frame 23",
-    image: "/charlene-showcase/23.png",
-    className: "design-marquee__card--upper-right",
-  },
-  {
-    id: 6,
-    label: "Open portfolio frame 27",
-    image: "/charlene-showcase/27.png",
-    className: "design-marquee__card--lower-right",
-  },
-  {
-    id: 7,
-    label: "Open portfolio frame 29",
-    image: "/charlene-showcase/29.png",
-    className: "design-marquee__card--right",
-  },
+const DESIGN_LAYOUT_CLASSES = [
+  "design-marquee__card--left",
+  "design-marquee__card--upper-left",
+  "design-marquee__card--lower-left",
+  "design-marquee__card--center",
+  "design-marquee__card--upper-right",
+  "design-marquee__card--lower-right",
+  "design-marquee__card--right",
 ];
+
+const DESIGN_SHOWCASE_DATA = [
+  "4", "5", "6", "7", "9", "10", "11", "12", "13", "14", "15", "16",
+  "17", "18", "19", "20", "21", "22", "23", "24", "26", "27", "28", "29",
+].map((id, index) => ({
+  id,
+  index,
+  label: `Preview design frame ${id}`,
+  image: `/charlene-showcase/${id}.png`,
+}));
+
+const DESIGN_MARQUEE_PANELS = Array.from(
+  { length: Math.ceil(DESIGN_SHOWCASE_DATA.length / DESIGN_LAYOUT_CLASSES.length) },
+  (_, panelIndex) =>
+    DESIGN_LAYOUT_CLASSES.map((layoutClass, slotIndex) => {
+      const designItem =
+        DESIGN_SHOWCASE_DATA[
+          (panelIndex * DESIGN_LAYOUT_CLASSES.length + slotIndex) % DESIGN_SHOWCASE_DATA.length
+        ];
+
+      return {
+        ...designItem,
+        layoutClass,
+        slotKey: `${panelIndex}-${slotIndex}-${designItem.id}`,
+      };
+    })
+);
 
 const DESIGN_TOOLBELT = [
   { icon: Palette, label: "Visual Systems" },
@@ -231,14 +223,13 @@ export default function Home() {
     let frameId = 0;
     let lastTimestamp = 0;
     let offset = 0;
-    let panelWidth = 0;
+    let sequenceWidth = 0;
 
-    const updatePanelWidth = () => {
-      const firstPanel = track.firstElementChild as HTMLElement | null;
-      panelWidth = firstPanel?.offsetWidth ?? 0;
+    const updateSequenceWidth = () => {
+      sequenceWidth = track.scrollWidth / 2;
 
-      if (panelWidth > 0) {
-        offset = -panelWidth;
+      if (sequenceWidth > 0) {
+        offset = -sequenceWidth;
         track.style.transform = `translate3d(${offset}px, 0, 0)`;
       }
     };
@@ -251,11 +242,11 @@ export default function Home() {
       const delta = timestamp - lastTimestamp;
       lastTimestamp = timestamp;
 
-      if (panelWidth > 0) {
+      if (sequenceWidth > 0) {
         offset += delta * 0.03;
 
         if (offset >= 0) {
-          offset = -panelWidth;
+          offset = -sequenceWidth;
         }
 
         track.style.transform = `translate3d(${offset}px, 0, 0)`;
@@ -264,11 +255,11 @@ export default function Home() {
       frameId = window.requestAnimationFrame(step);
     };
 
-    updatePanelWidth();
+    updateSequenceWidth();
     frameId = window.requestAnimationFrame(step);
 
     const resizeObserver = new ResizeObserver(() => {
-      updatePanelWidth();
+      updateSequenceWidth();
     });
 
     resizeObserver.observe(track);
@@ -522,32 +513,36 @@ export default function Home() {
 
                   <div ref={designTrackRef} className="design-marquee__track">
                     {[0, 1].map((copyIndex) => (
-                      <div
-                        key={copyIndex}
-                        className="design-marquee__panel"
-                        aria-hidden={copyIndex === 1}
-                      >
-                        {DESIGN_SHOWCASE_DATA.map((item, index) => (
-                          <button
-                            key={`${copyIndex}-${item.id}`}
-                            type="button"
-                            className={`design-marquee__card group ${item.className}`}
-                            aria-label={item.label}
-                            onClick={() => openDesignPreview(index)}
-                          >
-                            <Image
-                              src={item.image}
-                              alt=""
-                              fill
-                              sizes="(max-width: 768px) 70vw, 24vw"
-                              className="object-cover"
-                            />
-                            <span className="design-marquee__card-badge">
-                              <ArrowUpRight size={16} />
-                            </span>
-                          </button>
-                        ))}
-                      </div>
+                      DESIGN_MARQUEE_PANELS.map((panel, panelIndex) => (
+                        <div
+                          key={`${copyIndex}-${panelIndex}`}
+                          className="design-marquee__panel"
+                          aria-hidden={copyIndex === 1}
+                        >
+                          {panel.map((item) => (
+                            <button
+                              key={`${copyIndex}-${item.slotKey}`}
+                              type="button"
+                              className={`design-marquee__card group ${item.layoutClass}`}
+                              aria-label={item.label}
+                              onClick={() => openDesignPreview(item.index)}
+                            >
+                              <Image
+                                src={item.image}
+                                alt=""
+                                fill
+                                sizes="(max-width: 768px) 70vw, 24vw"
+                                quality={60}
+                                loading="lazy"
+                                className="object-cover"
+                              />
+                              <span className="design-marquee__card-badge">
+                                <ArrowUpRight size={16} />
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      ))
                     ))}
                   </div>
                 </div>
@@ -608,6 +603,7 @@ export default function Home() {
                 alt={activeDesignItem.label}
                 fill
                 sizes="90vw"
+                quality={60}
                 className="object-contain"
               />
             </div>
