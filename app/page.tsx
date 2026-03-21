@@ -131,6 +131,13 @@ export default function Home() {
   const portfolioRef = useRef<HTMLElement>(null);
   const projectsRef = useRef<HTMLElement>(null);
   const designTrackRef = useRef<HTMLDivElement>(null);
+  const designSequenceWidthRef = useRef(0);
+  const designOffsetRef = useRef(0);
+  const designHoveringRef = useRef(false);
+  const designDraggingRef = useRef(false);
+  const designDragStartXRef = useRef(0);
+  const designDragStartOffsetRef = useRef(0);
+  const designMovedDuringDragRef = useRef(false);
 
   useEffect(() => {
     animate('.animate-hero',{
@@ -227,9 +234,11 @@ export default function Home() {
 
     const updateSequenceWidth = () => {
       sequenceWidth = track.scrollWidth / 2;
+      designSequenceWidthRef.current = sequenceWidth;
 
       if (sequenceWidth > 0) {
         offset = -sequenceWidth;
+        designOffsetRef.current = offset;
         track.style.transform = `translate3d(${offset}px, 0, 0)`;
       }
     };
@@ -242,14 +251,17 @@ export default function Home() {
       const delta = timestamp - lastTimestamp;
       lastTimestamp = timestamp;
 
-      if (sequenceWidth > 0) {
+      if (sequenceWidth > 0 && !designHoveringRef.current && !designDraggingRef.current) {
         offset += delta * 0.03;
 
         if (offset >= 0) {
           offset = -sequenceWidth;
         }
 
+        designOffsetRef.current = offset;
         track.style.transform = `translate3d(${offset}px, 0, 0)`;
+      } else {
+        offset = designOffsetRef.current;
       }
 
       frameId = window.requestAnimationFrame(step);
@@ -274,7 +286,32 @@ export default function Home() {
     projectsRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const normalizeDesignOffset = (offset: number) => {
+    const sequenceWidth = designSequenceWidthRef.current;
+
+    if (sequenceWidth <= 0) {
+      return offset;
+    }
+
+    let nextOffset = offset;
+
+    while (nextOffset >= 0) {
+      nextOffset -= sequenceWidth;
+    }
+
+    while (nextOffset < -sequenceWidth) {
+      nextOffset += sequenceWidth;
+    }
+
+    return nextOffset;
+  };
+
   const openDesignPreview = (index: number) => {
+    if (designMovedDuringDragRef.current) {
+      designMovedDuringDragRef.current = false;
+      return;
+    }
+
     setSelectedDesignIndex(index);
   };
 
@@ -291,6 +328,57 @@ export default function Home() {
   };
 
   const activeDesignItem = selectedDesignIndex !== null ? DESIGN_SHOWCASE_DATA[selectedDesignIndex] : null;
+
+  const handleDesignPointerEnter = () => {
+    designHoveringRef.current = true;
+  };
+
+  const handleDesignPointerLeave = () => {
+    if (!designDraggingRef.current) {
+      designHoveringRef.current = false;
+    }
+  };
+
+  const handleDesignPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "mouse" && event.button !== 0) {
+      return;
+    }
+
+    designDraggingRef.current = true;
+    designHoveringRef.current = true;
+    designMovedDuringDragRef.current = false;
+    designDragStartXRef.current = event.clientX;
+    designDragStartOffsetRef.current = designOffsetRef.current;
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const handleDesignPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!designDraggingRef.current) {
+      return;
+    }
+
+    const deltaX = event.clientX - designDragStartXRef.current;
+
+    if (Math.abs(deltaX) > 6) {
+      designMovedDuringDragRef.current = true;
+    }
+
+    const nextOffset = normalizeDesignOffset(designDragStartOffsetRef.current + deltaX);
+    designOffsetRef.current = nextOffset;
+
+    if (designTrackRef.current) {
+      designTrackRef.current.style.transform = `translate3d(${nextOffset}px, 0, 0)`;
+    }
+  };
+
+  const handleDesignPointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+    designDraggingRef.current = false;
+    event.currentTarget.releasePointerCapture(event.pointerId);
+
+    if (!event.currentTarget.matches(":hover")) {
+      designHoveringRef.current = false;
+    }
+  };
 
   return (
     <div className="min-h-screen relative overflow-x-hidden selection:bg-brand-pink/30">
@@ -489,7 +577,11 @@ export default function Home() {
           </div>
           <div className="mt-16 portfolio-card-animate opacity-0">
             <div className="design-marquee">
-              <div className="design-marquee__board">
+              <div
+                className="design-marquee__board"
+                onPointerEnter={handleDesignPointerEnter}
+                onPointerLeave={handleDesignPointerLeave}
+              >
                 <div className="design-marquee__header">
                   <div>
                     <p className="design-marquee__eyebrow">DESIGN <span>Projects</span></p>
@@ -507,7 +599,13 @@ export default function Home() {
                   </a>
                 </div>
 
-                <div className="design-marquee__viewport">
+                <div
+                  className="design-marquee__viewport"
+                  onPointerDown={handleDesignPointerDown}
+                  onPointerMove={handleDesignPointerMove}
+                  onPointerUp={handleDesignPointerUp}
+                  onPointerCancel={handleDesignPointerUp}
+                >
                   <div className="design-marquee__fade design-marquee__fade--left" aria-hidden="true"></div>
                   <div className="design-marquee__fade design-marquee__fade--right" aria-hidden="true"></div>
 
