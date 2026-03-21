@@ -4,9 +4,10 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { animate, stagger } from 'animejs';
 import { 
-  Sun, Moon, Mail, ChevronRight, MapPin, 
+  Sun, Moon, Mail, ChevronRight, ChevronLeft, MapPin, 
   Linkedin, Github, Layout, Settings, Briefcase, 
-  Award, GraduationCap, Code2, ExternalLink 
+  Award, GraduationCap, ExternalLink, FolderOpen,
+  ArrowUpRight, Palette, PenTool, Layers3, MonitorSmartphone, Sparkles, X
 } from "lucide-react";
 
 // --- DYNAMIC DATA OBJECTS ---
@@ -62,6 +63,62 @@ const PROJECTS_DATA = [
   },
 ];
 
+const DESIGN_PORTFOLIO_URL = "https://www.canva.com/design/DAGpsOQaUuw/yrOSnsScmCKZj4Z-fovUEA/edit?utm_content=DAGpsOQaUuw&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton";
+
+const DESIGN_SHOWCASE_DATA = [
+  {
+    id: 1,
+    label: "Open portfolio frame 04",
+    image: "/charlene-showcase/4.png",
+    className: "design-marquee__card--left",
+  },
+  {
+    id: 2,
+    label: "Open portfolio frame 07",
+    image: "/charlene-showcase/7.png",
+    className: "design-marquee__card--upper-left",
+  },
+  {
+    id: 3,
+    label: "Open portfolio frame 10",
+    image: "/charlene-showcase/10.png",
+    className: "design-marquee__card--lower-left",
+  },
+  {
+    id: 4,
+    label: "Open portfolio frame 18",
+    image: "/charlene-showcase/18.png",
+    className: "design-marquee__card--center",
+  },
+  {
+    id: 5,
+    label: "Open portfolio frame 23",
+    image: "/charlene-showcase/23.png",
+    className: "design-marquee__card--upper-right",
+  },
+  {
+    id: 6,
+    label: "Open portfolio frame 27",
+    image: "/charlene-showcase/27.png",
+    className: "design-marquee__card--lower-right",
+  },
+  {
+    id: 7,
+    label: "Open portfolio frame 29",
+    image: "/charlene-showcase/29.png",
+    className: "design-marquee__card--right",
+  },
+];
+
+const DESIGN_TOOLBELT = [
+  { icon: Palette, label: "Visual Systems" },
+  { icon: PenTool, label: "UI Explorations" },
+  { icon: Layers3, label: "Brand Layers" },
+  { icon: MonitorSmartphone, label: "Responsive Screens" },
+  { icon: Sparkles, label: "Motion Detail" },
+  { icon: Layout, label: "Layout Studies" },
+];
+
 const CERTIFICATIONS_DATA = [
   { title: "Google IT Support Professional Certificate", issuer: "Google, 2025" },
   { title: "Networking Basics", issuer: "Cisco, 2025" },
@@ -78,8 +135,10 @@ const AWARDS_DATA = [
 
 export default function Home() {
   const [isDark, setIsDark] = useState(true);
+  const [selectedDesignIndex, setSelectedDesignIndex] = useState<number | null>(null);
   const portfolioRef = useRef<HTMLElement>(null);
   const projectsRef = useRef<HTMLElement>(null);
+  const designTrackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     animate('.animate-hero',{
@@ -119,12 +178,128 @@ export default function Home() {
 
   useEffect(() => {
     const root = window.document.documentElement;
-    isDark ? root.classList.add("dark") : root.classList.remove("dark");
+
+    if (isDark) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
   }, [isDark]);
+
+  useEffect(() => {
+    if (selectedDesignIndex === null) {
+      return undefined;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setSelectedDesignIndex(null);
+      }
+
+      if (event.key === "ArrowRight") {
+        setSelectedDesignIndex((current) =>
+          current === null ? current : (current + 1) % DESIGN_SHOWCASE_DATA.length
+        );
+      }
+
+      if (event.key === "ArrowLeft") {
+        setSelectedDesignIndex((current) =>
+          current === null
+            ? current
+            : (current + DESIGN_SHOWCASE_DATA.length - 1) % DESIGN_SHOWCASE_DATA.length
+        );
+      }
+    };
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedDesignIndex]);
+
+  useEffect(() => {
+    const track = designTrackRef.current;
+
+    if (!track) {
+      return undefined;
+    }
+
+    let frameId = 0;
+    let lastTimestamp = 0;
+    let offset = 0;
+    let panelWidth = 0;
+
+    const updatePanelWidth = () => {
+      const firstPanel = track.firstElementChild as HTMLElement | null;
+      panelWidth = firstPanel?.offsetWidth ?? 0;
+
+      if (panelWidth > 0) {
+        offset = -panelWidth;
+        track.style.transform = `translate3d(${offset}px, 0, 0)`;
+      }
+    };
+
+    const step = (timestamp: number) => {
+      if (!lastTimestamp) {
+        lastTimestamp = timestamp;
+      }
+
+      const delta = timestamp - lastTimestamp;
+      lastTimestamp = timestamp;
+
+      if (panelWidth > 0) {
+        offset += delta * 0.03;
+
+        if (offset >= 0) {
+          offset = -panelWidth;
+        }
+
+        track.style.transform = `translate3d(${offset}px, 0, 0)`;
+      }
+
+      frameId = window.requestAnimationFrame(step);
+    };
+
+    updatePanelWidth();
+    frameId = window.requestAnimationFrame(step);
+
+    const resizeObserver = new ResizeObserver(() => {
+      updatePanelWidth();
+    });
+
+    resizeObserver.observe(track);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   const scrollToProjects = () => {
     projectsRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  const openDesignPreview = (index: number) => {
+    setSelectedDesignIndex(index);
+  };
+
+  const showPreviousDesign = () => {
+    setSelectedDesignIndex((current) =>
+      current === null ? current : (current + DESIGN_SHOWCASE_DATA.length - 1) % DESIGN_SHOWCASE_DATA.length
+    );
+  };
+
+  const showNextDesign = () => {
+    setSelectedDesignIndex((current) =>
+      current === null ? current : (current + 1) % DESIGN_SHOWCASE_DATA.length
+    );
+  };
+
+  const activeDesignItem = selectedDesignIndex !== null ? DESIGN_SHOWCASE_DATA[selectedDesignIndex] : null;
 
   return (
     <div className="min-h-screen relative overflow-x-hidden selection:bg-brand-pink/30">
@@ -321,16 +496,133 @@ export default function Home() {
             ))}
           
           </div>
-          <div className="flex flex-wrap justify-center gap-8 mt-16 opacity-30 grayscale portfolio-card-animate opacity-0">
-            <a href="https://www.canva.com/design/DAGpsOQaUuw/yrOSnsScmCKZj4Z-fovUEA/edit?utm_content=DAGpsOQaUuw&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton ">
-            <button className="btn-portfolio"> See More</button> </a>
+          <div className="mt-16 portfolio-card-animate opacity-0">
+            <div className="design-marquee">
+              <div className="design-marquee__board">
+                <div className="design-marquee__header">
+                  <div>
+                    <p className="design-marquee__eyebrow">DESIGN <span>Projects</span></p>
+                    <p className="design-marquee__subtitle">UI/UX and Graphic Design</p>
+                  </div>
+
+                  <a
+                    href={DESIGN_PORTFOLIO_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="design-marquee__cta"
+                    aria-label="Open the full design portfolio"
+                  >
+                    <FolderOpen size={18} />
+                  </a>
+                </div>
+
+                <div className="design-marquee__viewport">
+                  <div className="design-marquee__fade design-marquee__fade--left" aria-hidden="true"></div>
+                  <div className="design-marquee__fade design-marquee__fade--right" aria-hidden="true"></div>
+
+                  <div ref={designTrackRef} className="design-marquee__track">
+                    {[0, 1].map((copyIndex) => (
+                      <div
+                        key={copyIndex}
+                        className="design-marquee__panel"
+                        aria-hidden={copyIndex === 1}
+                      >
+                        {DESIGN_SHOWCASE_DATA.map((item, index) => (
+                          <button
+                            key={`${copyIndex}-${item.id}`}
+                            type="button"
+                            className={`design-marquee__card group ${item.className}`}
+                            aria-label={item.label}
+                            onClick={() => openDesignPreview(index)}
+                          >
+                            <Image
+                              src={item.image}
+                              alt=""
+                              fill
+                              sizes="(max-width: 768px) 70vw, 24vw"
+                              className="object-cover"
+                            />
+                            <span className="design-marquee__card-badge">
+                              <ArrowUpRight size={16} />
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="design-marquee__footer">
+                  {DESIGN_TOOLBELT.map((tool) => {
+                    const Icon = tool.icon;
+
+                    return (
+                      <div
+                        key={tool.label}
+                        className="design-marquee__icon"
+                        aria-label={tool.label}
+                        title={tool.label}
+                      >
+                        <Icon size={18} />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
           </div>
-          
-          <div className="flex flex-wrap justify-center gap-8 mt-16 portfolio-card-animate opacity-0">
-             <Code2 size={32} />
-          </div>
+
         </div>
       </section>
+
+      {activeDesignItem && (
+        <div
+          className="design-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Design preview"
+          onClick={() => setSelectedDesignIndex(null)}
+        >
+          <div className="design-modal__panel" onClick={(event) => event.stopPropagation()}>
+            <button
+              type="button"
+              className="design-modal__close"
+              onClick={() => setSelectedDesignIndex(null)}
+              aria-label="Close preview"
+            >
+              <X size={20} />
+            </button>
+
+            <button
+              type="button"
+              className="design-modal__nav design-modal__nav--left"
+              onClick={showPreviousDesign}
+              aria-label="Show previous image"
+            >
+              <ChevronLeft size={22} />
+            </button>
+
+            <div className="design-modal__media">
+              <Image
+                src={activeDesignItem.image}
+                alt={activeDesignItem.label}
+                fill
+                sizes="90vw"
+                className="object-contain"
+              />
+            </div>
+
+            <button
+              type="button"
+              className="design-modal__nav design-modal__nav--right"
+              onClick={showNextDesign}
+              aria-label="Show next image"
+            >
+              <ChevronRight size={22} />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
